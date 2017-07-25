@@ -20,12 +20,14 @@ Math.random2(6, 16) => int drumVoices;
 int DrumVoice[drumVoices];
 SndBuf drum[drumVoices];
 JCRev drumRev[drumVoices];
+Envelope drumEnv[drumVoices];
 Pan2 drumPan[drumVoices];
 
 // sound chain for sndbuff
 for (int i; i < drumVoices; i++)
 {
-    drum[i] => drumRev[i] => drumPan[i] => dac;
+    drum[i] => drumRev[i] => drumEnv[i] => drumPan[i] => dac;
+    5::ms => drumEnv[i].duration;
 }
 
 // array of samples for sndbuf
@@ -98,7 +100,11 @@ fun void playDrum(float gain, float revGain, float revMix, float pan, int sample
         if(position == 2) {Math.random2(0, end) => drum[which].pos;}
         if(position == 3) {end => drum[which].pos;}
         rate => drum[which].rate;
+        drumEnv[which].keyOn();
+        drumEnv[which].duration() => now;
         ring => now;
+        drumEnv[which].keyOff();
+        drumEnv[which].duration() => now;
         0 => DrumVoice[which];      
     }
 }
